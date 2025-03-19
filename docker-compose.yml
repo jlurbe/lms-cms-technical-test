@@ -1,29 +1,39 @@
-version: '2'
+version: '3.8'
+
 services:
   zookeeper:
     image: wurstmeister/zookeeper:latest
     ports:
       - '2181:2181'
+    networks:
+      - app_network
+
   kafka:
     image: wurstmeister/kafka:2.11-1.1.1
     ports:
       - '9092:9092'
-    links:
+    depends_on:
       - zookeeper
     environment:
-      KAFKA_ADVERTISED_HOST_NAME: ${HOST_IP}
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
       KAFKA_DELETE_TOPIC_ENABLE: 'true'
       KAFKA_CREATE_TOPICS: 'topic-test:1:1'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - app_network
+
   redis:
     image: redis:latest
     ports:
       - '6379:6379'
     volumes:
       - redis_data:/data
+    networks:
+      - app_network
 
   mysql:
     image: mysql:latest
@@ -38,7 +48,34 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       - ./etc/mysql/db.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app_network
+
+  app:
+    build: .
+    ports:
+      - '3000:3000'
+      - '3001:3001'
+      - '3002:3002'
+    depends_on:
+      - mysql
+      - redis
+      - kafka
+    environment:
+      DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD}@mysql:3306/${MYSQL_DATABASE}
+      REDIS_HOST: redis
+      KAFKA_BROKER: kafka:9092
+    command: ['npm', 'run', 'start:prod']
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: always
+    networks:
+      - app_network
 
 volumes:
   redis_data:
   mysql_data:
+
+networks:
+  app_network:

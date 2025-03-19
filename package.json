@@ -13,7 +13,7 @@
     "start:dev-users-api": "nest start --watch users-api",
     "start:dev-kafka-redis-consumer": "nest start --watch kafka-redis-consumer",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/apps/licenses-api/main",
+    "start:prod": "concurrently -c \"blue.bold,magenta.bold,cyan.bold\" \"node dist/apps/licenses-api/main\" \"node dist/apps/users-api/main\" \"node dist/apps/kafka-redis-consumer/main\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
