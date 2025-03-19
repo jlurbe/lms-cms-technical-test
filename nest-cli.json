@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/licenses-api/src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/licenses-api/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/licenses-api",
+  "projects": {
+    "kafka-redis-consumer": {
+      "type": "application",
+      "root": "apps/kafka-redis-consumer",
+      "entryFile": "main",
+      "sourceRoot": "apps/kafka-redis-consumer/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/kafka-redis-consumer/tsconfig.app.json"
+      }
+    },
+    "licenses-api": {
+      "type": "application",
+      "root": "apps/licenses-api",
+      "entryFile": "main",
+      "sourceRoot": "apps/licenses-api/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/licenses-api/tsconfig.app.json"
+      }
+    },
+    "users-api": {
+      "type": "application",
+      "root": "apps/users-api",
+      "entryFile": "main",
+      "sourceRoot": "apps/users-api/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/users-api/tsconfig.app.json"
+      }
+    }
+  }
+}
